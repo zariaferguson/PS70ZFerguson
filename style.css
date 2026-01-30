@@ -1,8 +1,8 @@
 body {
-    font: 20px "Gill Sans", Verdana, sans-serif;
+    font: 20px "Lucida Console", "Courier New", monospace;
     line-height: 1.8;
     color: #000000;
-    background-color: #00ff00;
+    background-color: #FFEEF4;
     padding-top: 0px !important;
   }
 
@@ -23,7 +23,7 @@ a {
 }
 
 nav {
-  background-color: #FF00FF;
+  background-color: #FFCCE0;
   color: #EEE7E8;
   padding: 50px 0px;
 }
@@ -41,36 +41,36 @@ nav {
 }
 
 .nav-link {
-  border: 3px outset #a3a3a3;
+  border: 3px outset #FFCCE0;
   border-radius: 20px;
   padding: 10px 30px;
-  background-color: #a3a3a3;
-  color: #EEE7E8;
+  background-color: #FFCCE0;
+  color: #000000
   transition: 0.3s;
 }
 
 .nav-link:hover {
-  border: 3px outset #FFFFFF;
+  border: 3px outset #FF85B3;
   border-radius: 20px;
   padding: 10px 30px;
-  background-color: #a3a3a3;
+  background-color: #FF85B3;
   transition: 0.3s;
 }
 
 #btn {
-  border: 3px outset #FFFFFF;
+  border: 3px outset #FFCCE0;
   border-radius: 40px;
   padding: 10px 30px;
-  background-color: #a3a3a3;
+  background-color: #FFCCE0;
   color: #000000;
   transition: 0.3s;
 }
 
 #btn:hover {
-  border: 3px inset #FFFFFF;
+  border: 3px inset #FF85B3;
   border-radius: 40px;
   padding: 10px 30px;
-  background-color: #a3a3a3;
+  background-color: #FF85B3;
   transition: 0.3s;
 }
 
@@ -90,7 +90,7 @@ nav {
 
 code {
   background-color: #2d2b33;
-  color: #EEE7E8;
+  color: #000000;
   font-family: 'Courier New', Courier, monospace;
 }
 
