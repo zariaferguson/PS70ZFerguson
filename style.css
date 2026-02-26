@@ -88,12 +88,11 @@ nav {
   justify-content: center;
 }
 
-code {
-  background-color: #2d2b33;
+/*code {
   color: #000000;
   font-family: 'Courier New', Courier, monospace;
 }
-
+*/
 .caption {
   color: gray;
   font-size: 16px;
