@@ -26,8 +26,134 @@
 <h3>Week 6: Electronic Inputs</h3>
 
 <h4>Assignment 1: Capactive Sensor<h4>
+<p> For this exercise, we used capacitive sensors to measure angle rotation with the microcontroller. Our setup is show as below: </p>
 
-<h4>Assignment 2: [Use + Calibrate Another Sensor]</h4>
+<img src="./cp_circ.jpg" alt="pic of 3D print" style="width:500px">
+
+<p> We set one capacitor to stand in place. For the other capacitor, we mounted it on top of a protractor and rotated the capacitor at increments of 45 degrees. At each increment, we recorded the output that we got after running the Arduino code for AnalogReadSerial. </p>
+
+<table style="width:70%">
+  <tr>
+    <th>Angle (degrees)</th>
+    <th>Capacitive Sensor Value</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>79000</td>
+  </tr>
+  <tr>
+    <td>45</td>
+    <td>63000</td>
+  </tr>
+  <tr>
+    <tr>
+    <td>90</td>
+    <td>57000</td>
+  </tr>
+  <tr>
+    <td>135</td>
+    <td>53000</td>
+  </tr>
+  <tr>
+    <td>180</td>
+    <td>50000</td>
+  </tr>
+  <tr>
+    <td>225</td>
+    <td>53000</td>
+  </tr>
+  <tr>
+    <td>315</td>
+    <td>57000</td>
+  </tr>
+  <tr>
+    <td>360</td>
+    <td>79000</td>
+  </tr>
+  </tr>
+</table>
+
+</body>
+</html>
+
+<p><u> Table of Rotation Angles and Corresponding Capacitive Sensor Values </p></u>
+
+<p> Post-processing was done in Python to give us a plot of the angle of rotation and the corresponding value sensor value.</p>
+
+<img src="./cp_rot_sensor.png" alt="graph for capacitive sensor" style="width:500px">
+
+<p> This graph shows us that as the rotating capacitor move further away from the capacitor standing still, the sensor value decreases. Our maximum sensor value correpsonds to the smallest angle between both capacitors (where the capacitors are facing each other). </p>
+
+<h4>Assignment 2: Calibrate a Photoresistor using an LED </h4>
+<p> For this exercise, I am manipulating the brightness of an LED using the sensor values obtained from my photoresistor. I first set my circuit up and tested it to see if the LED brightness was changing based on the light input on the photoresistor. 
+
+<br></br>
+<video width="480" height="240" controls>
+  <source src="sensor_light.mp4" type="video/mp4">
+</video>
+
+Once confirmed, I built the set up (as displayed below) to measure the distance from the light source to the photoresistor in order to get fixed distances and corresponding sensor values. </p>
+
+<img src="./setup.jpg" alt="LED sensor setup" style="width:500px">
+<p> For this setup, I measured the height of the blocks and periodically stacked them with increasing heights to obtain the distance from the light source to the photoresistor. This was done in a dark room so that the ceiling lights did not interfere with the sensor results. </p>
+
+<img src="./sensor_pr_circ.jpg" alt="pr, LED circuit" style="width:300px">
+<p><u> Here is the circuit with the photoresistor and the LED</p></u>
+
+
+<table style="width:70%">
+  <tr>
+    <th>Angle (degrees)</th>
+    <th>Capacitive Sensor Value</th>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>79000</td>
+  </tr>
+  <tr>
+    <td>45</td>
+    <td>63000</td>
+  </tr>
+  <tr>
+    <tr>
+    <td>90</td>
+    <td>57000</td>
+  </tr>
+  <tr>
+    <td>135</td>
+    <td>53000</td>
+  </tr>
+  <tr>
+    <td>180</td>
+    <td>50000</td>
+  </tr>
+  <tr>
+    <td>225</td>
+    <td>53000</td>
+  </tr>
+  <tr>
+    <td>315</td>
+    <td>57000</td>
+  </tr>
+  <tr>
+    <td>360</td>
+    <td>79000</td>
+  </tr>
+  </tr>
+</table>
+
+</body>
+</html>
+
+<p><u> Table of Light Source Distance and Corresponding Sensor Values </p></u>
+
+<p> Post-processing was done in Python to give us a plot of the angle of rotation and the corresponding value sensor value.</p>
+<img src="./light_sensor_graph.png" alt="graph for light and photoresistor" style="width:500px">
+
+<p> This graph shows us that the shorter the distnace from the light source, the lower the sensor value. The shorter distance corresponds to maximum as the rotating capacitor move further away from the capacitor standing still, the sensor value decreases. Our maximum sensor value correpsonds to the smallest angle between both capacitors (where the capacitors are facing each other). The LED was also brightest at the shortest distance. </p>
+
+
+<h4>Python Code for reference*</h4>
 
 </div>
 </xmp>
