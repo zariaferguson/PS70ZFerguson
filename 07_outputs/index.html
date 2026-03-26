@@ -5,6 +5,19 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="../style.css" rel="stylesheet">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/google/code-prettify@master/src/prettify.css">
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/src/prettify.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+      document.querySelectorAll('pre code').forEach((el) => {
+        hljs.highlightElement(el);
+      });
+    });
+</script>
+<link rel="stylesheet" href="https://pygments.org/static/css/default.css">
+
 
 <nav class="navbar navbar-expand-sm navbar-dark" style=" color: #EEE7E8;">
   <div style="align-items: center; justify-content: center;" class="container-fluid">
@@ -29,6 +42,11 @@
 <p> My final project is an automated jewelry stand with spinning hooks that rotate to present the desired piece of jewelry. For my MVP, I focused on developing the spinning mechanism to determine the workflow for selecting a specific necklace. </p>
 
 <img src="./MVP_PS70.jpg" alt="pic of MVP" style="width:500px">
+<br></br>
+
+<video width="640" height="480" controls>
+  <source src="fourbuttonvid.mp4" type="video/mp4">
+</video>
 
 <p> Materials used: </p>
 <p> Wood </p>
@@ -38,42 +56,135 @@
 <p> 1 stepper motor </p>
 <p> 4 buttons </p>
 
-<h4>Wooden Frame</h4>
+<h3><strong>Wooden Frame</h3></strong>
 <img src="./wooden_frame.jpg" alt="Wooden Frame" style="width:300px">
 <p> I designed the frame components in Fusion360 and then used the laser cutter to cut the pieces from wood. I assembled the pieces together with supper glue. Here are the dimensions I used: </p>
-<img src="./completeframe.png" alt="Fusion360 pic of dimensions" style="width:400px">
+<img src="./completeframe.png" alt="Fusion360 pic of dimensions" style="width:500px">
 <img src="./standingframe.png" alt="Fusion360 pic of dimensions" style="width:300px">
 <p> For final fabrication, I intend to use acrylic panes to give the stand a cleaner and more polished finish. </p>
 
-<h4>Spinning Hooks</h4>
+<h3><strong>Spinning Hooks</h3></strong>
 <p> I designed the spinning hooks in Fusion360 for assignments in prior weeks. This week, I updated the initial model by adding a hole at the top for mounting the stepper motor and a side screw hole to secure the spinning piece during rotation. </p>
-<img src="./week7-placeholder-image.jpg" alt="Fusion360 pic of dimensions" style="width:500px">
+<img src="./updatedhooks.png" alt="fusion model of hooks" style="width:300px">
 
-<img src="./week7-placeholder-image.jpg" alt="Picture of parts on 3D print" style="width:500px">
-<p> Parts on the 3D printer </p>
+<p> 3D printed Parts </p>
+<img src="./3dprinterparts.jpg" alt="Picture of parts on 3D print" style="width:300px">
+<img src="./week7-placeholder-image.jpg" alt="Final print pic" style="width:500px">
 
-<img src="./week7-placeholder-image.jpg" alt="Picture of parts on 3D print" style="width:500px">
-<p> Finished print! </p>
-
-<h4>Stepper Motor Setup</h4>
+<h3><strong>Stepper Motor Setup</h3></strong>
 <p> I connected the stepper motor following the tutorial on Pololu’s website: https://www.pololu.com/product/1182 </p>
-<img src="./week7-placeholder-image.jpg" alt="Pololu picture" style="width:500px">
-<img src="./week7-placeholder-image.jpg" alt="Picture of circuit" style="width:500px">
+<img src="./steppermotorcircuit.jpg" alt="Picture of circuit" style="width:500px">
 
 <p> All the parts assembled together: </p>
 <img src="./MVP_PS70.jpg" alt="pic of MVP" style="width:500px">
 
 <h4>Arduino Code</h4>
 <p> Developing the workflow for the spinning hooks seemed to be the most tedious part of the process. I first started by just getting the hooks to spin. </p>
+<br></br>
+
+<video width="640" height="480" controls>
+  <source src="spinning.mp4" type="video/mp4">
+</video>
 
 <p> I then incorporated a button as a basic user interface to stop the hooks. Here is the code: </p>
+<img src="./onebuttoncircuit.jpg" alt="pic of MVP" style="width:200px">
+<br></br>
+
+<video width="640" height="480" controls>
+  <source src="onebuttonvid.mp4" type="video/mp4">
+</video>
 
 <p> To improve precision, I implemented code that will track the current position (the current orientation of hook) and target position (where I want it to spin to). This gave me a little more control over where I wanted specific hooks to stop, enabling selection of a specific hook (or desired jewelry). I added coloured tape on every other hook to get better visibility as to how to the hooks were spinning. I tested workflows with both two-button and four-button configurations to evaluate user interaction. </p>
 
 <p> Here is the workflow with two buttons </p>
+<img src="./twobuttoncircuit.jpg" alt="pic of MVP" style="width:200px">
+<br></br>
+
+<video width="640" height="480" controls>
+  <source src="twobuttonvid.mp4" type="video/mp4">
+</video>
+
+<p> Here is the final code for the 4 button interface: </p>
+<pre class="pre prettyprint">
+  <code class="language-cpp code">
+const int stepPin = D0;
+const int dirPin = D1;
+const int buttonAPin = D2;
+const int buttonBPin = D3;
+const int buttonCPin = D4;
+const int buttonDPin = D5;
+int targetPos = 0;
+int currentPos = 0;
+int stepDist = 10; // 4 arms
 
 
-<p> Here is the workflow with four buttons </p>
+void setup() {
+  // set 2 pins as output
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+  pinMode(buttonAPin, INPUT_PULLUP);
+  pinMode(buttonBPin, INPUT_PULLUP);
+  pinMode(buttonCPin, INPUT_PULLUP);
+  pinMode(buttonDPin, INPUT_PULLUP);
+}
+
+void loop() {
+  // digitalWrite(dirPin, LOW); // tells the motor to spin in a certain direction
+  // reads input from button and modifies targetPos
+  int pressedA = digitalRead(buttonAPin);
+  if(pressedA == LOW) {
+    targetPos = 2;
+  }
+  int pressedB = digitalRead(buttonBPin);
+  if(pressedB == LOW) {
+    targetPos = 4;
+  }
+  int pressedC = digitalRead(buttonCPin);
+  if(pressedC == LOW) {
+    targetPos = 6;
+  }
+  int pressedD = digitalRead(buttonDPin);
+  if(pressedD == LOW) {
+    targetPos = 8;
+  }
+
+  if (currentPos != targetPos){
+    if (targetPos > currentPos){
+      int numSteps = (targetPos - currentPos)*stepDist;
+      digitalWrite(dirPin, LOW);
+      
+      for (int i = 0; i < numSteps ;i++){
+        digitalWrite(stepPin, HIGH);
+        delay(8);
+        digitalWrite(stepPin, LOW);
+        delay(8);
+      }
+
+      } else{
+        //if (targetPos < currentPos){
+        int numSteps = (currentPos - targetPos)*stepDist;
+        digitalWrite(dirPin, HIGH);
+        
+          for (int i = 0; i < numSteps ;i++){
+            digitalWrite(stepPin, HIGH);
+            delay(8);
+            digitalWrite(stepPin, LOW);
+            delay(8);
+      }
+    }
+      currentPos = targetPos; 
+  }
+ }
+</code>
+  </pre>
+
+
+<p> Here is the final workflow with four buttons </p>
+<br></br>
+
+<video width="640" height="480" controls>
+  <source src="fourbuttonvid.mp4" type="video/mp4">
+</video>
 
 <h4> Time Domain **Left to do </h4>
 <p> **Use an oscilloscope to discover the time domain at which your output device is operating. Is it on a fixed clock? What's its speed? Share images and describe your findings.** </p>
