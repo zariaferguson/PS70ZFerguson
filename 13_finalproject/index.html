@@ -93,38 +93,301 @@
 
   <div style="text-align:center;">
     <p>Hooks</p>
-    <img src="./hooks.png" alt="hooks" style="width:200px">
+    <img src="./hooks.png" alt="hooks" style="width:300px">
   </div>
 
   <div style="text-align:center;">
     <p>Both Parts Together</p>
-    <img src="./assembly.png" alt="assembly file" style="width:200px">
+    <img src="./assembly.png" alt="assembly file" style="width:300px">
   </div>
 
 </div>
 
-<p> Each individual hook has 4 grooves on them to hold the necklace or piece of jewelry. In different iterations of this piece, I used either 4 or 8 hooks. I also played around with detachable arms or having the arms being apart of the main body. In the end, I went with the latter for stability. Here is the final product: </p>
-<p> [INSERT] Picture of all the hook prototypes </p>
-
-<p> [INSERT] Picture of parts separately </p>
+<p> Each individual hook has 4 grooves to hold the necklaces or pieces of jewelry. In different iterations of this piece, I used either 4 or 8 hooks. I also played around with detachable arms or having the arms being apart of the main body. In the end, I went with 8 hooks with the hook arms being a part of the main body as this was better for stability and the aesthetic I was going for. </p>
 
 <h4>User Interface</h4>
-<p> In order to get the structure to rotate where I want it them go, I went through different iterations of positioning. I have more details on this process using buttons here in Week 7: https://zariaferguson.github.io/PS70ZFerguson/07_outputs/index.html. My final version of this code involved adding the rotary encoder and OLED screen interface. Using the rotary encoder, now instead of using the button press to determine position, we use the index of the rotary encoder. A menu of 8 hooks appears on the OLED screen for the user to scroll through by rotating the rotary encoder on the side of the box. Pressing the button on the rotary encoder enables the user to select the hook then the system rotates to the specific hook. Pressing the button again also starts the rotation of the hooks again. </p>
 
+<div class="flexrow">
+<video width="640" height="480" controls>
+  <source src="drawingX.mp4" type="video/mp4">
+</video>
+</div>
+
+<p> To get the structure to rotate to a specific hook, I went through different iterations of positioning. I first used an interface with 4 buttons as described in <a href="https://zariaferguson.github.io/PS70ZFerguson/07_outputs/index.html"> Week 7</a>. I then incorporated a rotary encoder and OLED screen that allows the user to scroll through the menu of options and choose their desired hook (<a href="https://zariaferguson.github.io/PS70ZFerguson/10_machine/index.html"> Week 10</a>). My final version of this involved incoporating the stepper motor with the rotary encoder and the OLED screen. When the code runs, a menu of 8 hooks appears on the OLED screen for the user to scroll through by rotating the rotary encoder on the side of the box. When the user clicks the button on the rotary encoder, a screen comes up that reads "Hook [i] Moving..." where [i] would be the number of the hook that was selected. The system rotates to the specific hook. Pressing the button again afterwards allows the system to spin continuously again.
 
 <p> In order to spin to the correct hook, the code records the current position and the target position of the selected hook and calculates the difference in order to determine whether to spin forwards or backwards to get to the hook.  </p>
 
-
-<p> Here is the code for the rotary encoder OLED interface: </p>
-<p> [INSERT] Arduino code </p>
-
 <p> Here is the code incorporating the rotary encoder, the OLED and the stepper motor for positioning of the hooks: </p>
-<p> [INSERT] Arduino code </p>
+
+<pre class="pre prettyprint">
+  <code class="language-cpp code">
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+#include &lt;ezButton.h&gt;
+// OLED DISPLAY
+// Define OLED screen size and initialize display object using I2C communication
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+// ROTARY ENCODER
+// Initialize pins: These pins read rotation (CLK + DT) and button press (SW)
+#define CLK_PIN D2
+#define DT_PIN  D1
+#define SW_PIN  D0
+
+bool chosen_hook = false;
+
+// Creates a debounced button object for the encoder switch
+ezButton button(SW_PIN);
+
+// STEPPER MOTOR
+// Initialize STEP & DIR pin
+const int stepPin = D3;
+const int dirPin  = D6;
+
+// Number of motor steps required to move between each hook
+int stepDist = 200;
+
+// HOOK POSITION STATES
+int hookIndex = 1; // what the user is scrolling through in the menu
+int selectedHook = 0; // confirmed selection after button press
+int targetPos = 0; // where the motor should move to
+int currentPos = 0; // where the motor currently is
+
+// MENU OFFSET (scroll window)
+int menuOffset = 0;
+
+// Track rotary encoder movement
+int CLK_state;
+int prev_CLK_state;
+
+unsigned long lastStepTime = 0; // // Stores the last time a motor step was executed
+const unsigned long stepInterval = 8; // Time interval between each motor step pulse replacing delay(8)
+
+int stepsRemaining = 0; // Tracks how many individual step pulses are still needed to reach the target position
+bool motorRunning = false; // Indicates whether the motor is currently in motion
+int motorDir = LOW; // Keeps track of motor direction (forward or backward)
+bool continuousSpin = true;
+
+void setup() {
+ Serial.begin(9600);
+
+ // Initialize OLED display; stop program if initialization fails
+ if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
+   Serial.println("OLED failed");
+   while (1);
+
+  pinMode(stepPin, OUTPUT);
+  pinMode(dirPin, OUTPUT);
+
+  digitalWrite(dirPin, LOW);
+  lastStepTime = millis();
+  continuousSpin = true; // start spinning immediately
+}
+
+ oled.clearDisplay();
+
+ // Define rotary encoder input pins
+ pinMode(CLK_PIN, INPUT);
+ pinMode(DT_PIN, INPUT);
+
+ // Waits 50 ms after a button press to make sure the signal is stable
+ button.setDebounceTime(50);
+ 
+ // Store initial encoder state
+ prev_CLK_state = digitalRead(CLK_PIN);
+
+ // Define motor control output pins
+ pinMode(stepPin, OUTPUT);
+ pinMode(dirPin, OUTPUT);
+ 
+ // Draw initial menu on OLED screen
+ drawUI();
+ runMotor();
+}
+
+void loop() {
+ button.loop(); // Update button state
+ readEncoder(); // Read rotary encoder movement (scroll menu)
+ readButton(); // Check if encoder button was pressed (selection)
+
+  if (continuousSpin && !motorRunning && !chosen_hook) {
+    runMotor();
+  }
+ moveMotor(); // Move motor if a new target position is selected
+
+}
+
+// ROTARY SCROLLING: detects rotation direction and updates menu selection
+void readEncoder() {  
+ CLK_state = digitalRead(CLK_PIN);
+
+ // Detect one step of knob turning
+ if (CLK_state != prev_CLK_state && CLK_state == HIGH) {
+  
+   // Determine rotation direction using DT pin
+   if (digitalRead(DT_PIN) == HIGH) {
+     hookIndex--; // rotate one direction
+   } else {
+     hookIndex++; // rotate opposite direction
+   }
+
+   // Cycles between 1 and 4
+   if (hookIndex > 8) hookIndex = 1;
+   if (hookIndex < 1) hookIndex = 8;
+   
+   // Update OLED display with new selection
+   drawUI();
+ }
+ // Save current state for next comparison
+ prev_CLK_state = CLK_state;
+}
+
+// BUTTON PRESS (CONFIRM SELECTION): When encoder button is pressed, lock in selection and trigger motor move
+void readButton() {
+ if (button.isPressed()) {
+  if (chosen_hook == false) {
+    chosen_hook = true;
+
+    selectedHook = hookIndex;
+    targetPos = selectedHook*stepDist;   // replaces 4 old buttons
+
+    Serial.print("Moving to Hook: ");
+    Serial.println(targetPos);
+
+    // Confirmation screen on OLED
+    showSelected();
+
+    // START MOTOR MOVE (replaces old blocking loop trigger)
+    startMotorMove();
+  }
+  else {
+    chosen_hook = false;
+
+  }
+ }
+}
+
+void startMotorMove() {
+// Initializes motor movement from current position to target position by
+// setting up the state for moveMotor()
+
+  if (currentPos == targetPos) return;
+
+  motorRunning = true; // tells system the motor is running
+  stepsRemaining = abs(targetPos - currentPos);  // Convert position difference into number of physical step pulses needed
+
+  if (targetPos > currentPos) {
+    motorDir = LOW;
+    digitalWrite(dirPin, LOW);
+  } else {
+    motorDir = HIGH;
+    digitalWrite(dirPin, HIGH);
+
+    Serial.println(currentPos);
+    Serial.println(targetPos);
+  }
+
+  // Initialize timing reference
+  lastStepTime = millis();
+}
+
+// OLED MENU DISPLAY: Displays scrollable list of hooks with arrow indicator
+void drawUI() {
+ oled.clearDisplay();
+
+ oled.setTextSize(1);
+ oled.setTextColor(WHITE);
+
+ oled.setCursor(0, 0);
+ oled.println("Select Hook");
+
+ // Display 4 hooks on the screen each time you scroll
+ for (int i = 0; i < 4; i++) {
+
+   int hookNum = menuOffset + i + 1;
+   if (hookNum > 8) break;
+
+   oled.setCursor(0, 12 * (i + 1));
+
+   if (hookNum == hookIndex) oled.print("> ");
+   else oled.print("  ");
+
+   oled.print("Hook ");
+   oled.println(hookNum);
+ }
+
+ oled.display();
+}
+
+// CONFIRMATION SCREEN: Displays selected hook and "moving" message
+void showSelected() {
+ oled.clearDisplay();
+
+ oled.setTextSize(2);
+ oled.setCursor(10, 20);
+ oled.print("Hook ");
+ oled.println(selectedHook);
+
+ oled.setTextSize(1);
+ oled.setCursor(10, 45);
+ oled.println("Moving...");
+
+ oled.display();
+}
+
+// STEPPER MOTOR CONTROL: Moves motor from current position to target position
+void moveMotor() {
+
+ if (!motorRunning) return; // exit immediately if motor is not supposed to be moving
+  Serial.println(stepsRemaining);
+  unsigned long currentMillis = millis();  // get the current system time
+
+  if (currentMillis - lastStepTime >= stepInterval && stepsRemaining > 0) { //  Checks if enough time has passed since last step AND if steps remain
+
+    lastStepTime = currentMillis; // update last step time to current time
+
+     // Generate one step pulse
+    digitalWrite(stepPin, HIGH);
+    delayMicroseconds(2);
+    digitalWrite(stepPin, LOW);
+
+    stepsRemaining--; // decrease remaining step count
+
+    if (stepsRemaining <= 0) { // stop motor after all steps are complete
+      motorRunning = false;
+      currentPos = targetPos;
+
+    }
+  }
+}
+
+void runMotor() {
+  static unsigned long lastStep = 0;
+  digitalWrite(dirPin, LOW); // keep direction fixed
+
+  if (millis() - lastStep >= stepInterval) {   // timing control instead of delay(8)
+    lastStep = millis();
+
+    // step pulse
+    digitalWrite(stepPin, HIGH);
+    // delayMicroseconds(8);
+    digitalWrite(stepPin, LOW);
+
+    currentPos+=1;
+    if (currentPos >= 3200){
+      currentPos = 0;
+    }
+  }
+}
+
 
 <h4>Outer Frame</h4>
 <p> The outer frame of this box was made by using black acrylic panes for the walls and the top and bottom and a clear acrylic pane for the door. The pieces were designed as finger joint pieces from https://makercase.com/ and then laser cut. Two hingges were Small circular pieces were laser cut from the acrylic pane to make the door knob.
 
-The upper frame of this box was 3D printed leaving openings for the OLED screen and wire connections.
+<p> The upper frame of this box was 3D printed leaving openings for the OLED screen and wire connections. </p>
 <p> [INSERT] Arduino code </p>
 
 acrylic base and 3D printed upper frame</p>
@@ -141,17 +404,19 @@ acrylic base and 3D printed upper frame</p>
 
 
 <h4>**Plenty of images**</h4>
-<h4>**Downloaded STL for CAD components**</h4>
+
+
+<h4>**Links to outside stuff that were used or referenced**</h4>
+<h4>**Code**</h4>
+<p> </p>
+
+<h4>All CAD files used for fabrication can be found here</h4>
 <p class="margin">   </p>
 <div class="flexrow">
   <a id="btn" href="wk9.zip" download>Download my files from this week!
   </a>
 </div>
 <p class="margin">   </p>
-
-<h4>**Links to outside stuff that were used or referenced**</h4>
-<h4>**Code**</h4>
-<p> </p>
 
 
 
