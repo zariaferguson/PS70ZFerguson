@@ -27,6 +27,7 @@
 <h4>Demo Video:</h4>
 <br></br>
 
+<p> [INSERT] Arduino code </p>
 <video width="640" height="480" controls>
   <source src="360vid_cut.mp4" type="video/mp4">
 </video>
@@ -41,16 +42,40 @@
 <h4>Rotating Hooks: Hardware</h4>
 <p> [INSERT] Picture of all the hook prototypes </p>
 
-For the design of the hook, I used a similar set up to the hooks in the original jewelery organizer. There was a main body with a hole in the top center for the stepper motor and another hole at the top for a magnet. There is also a small hole at the side to insert a set screw to hold the piece in place when attached to the motor. In different iterations of this piece, I used either 4 or 8 hooks. I also played around with detachable arms or having the arms being apart of the main body. In the end, I went with the latter for stability. Here is the final product:
+<p> For the design of the hook, I used a similar set up to the hooks in the original jewelery organizer. There was a main body with a hole in the top center for the stepper motor and another hole at the top for a magnet. There is also a small hole at the side to insert a set screw to hold the piece in place when attached to the motor. Each hook has grooves on them to hold the necklace or piece of jewelry. In different iterations of this piece, I used either 4 or 8 hooks. I also played around with detachable arms or having the arms being apart of the main body. In the end, I went with the latter for stability. Here is the final product: </p>
 <p> [INSERT] Picture of all the hook prototypes </p>
 
 <p> [INSERT] Picture of parts separately </p>
 
 <h4>User Interface</h4>
-<p> In order to get the structure to rotate where I want it them go, I went through different iterations of positioning. I have more details on this process using buttons here in Week 7: https://zariaferguson.github.io/PS70ZFerguson/07_outputs/index.html. My final version of this code involved adding the rotary encoder and OLED screen interface. Using the rotary encoder, now instead of using the button press to determine position, we use the index of the rotary encoder </p>
+<p> In order to get the structure to rotate where I want it them go, I went through different iterations of positioning. I have more details on this process using buttons here in Week 7: https://zariaferguson.github.io/PS70ZFerguson/07_outputs/index.html. My final version of this code involved adding the rotary encoder and OLED screen interface. Using the rotary encoder, now instead of using the button press to determine position, we use the index of the rotary encoder. A menu of 8 hooks appears on the OLED screen for the user to scroll through by rotating the rotary encoder on the side of the box. Pressing the button on the rotary encoder enables the user to select the hook then the system rotates to the specific hook. Pressing the button again also starts the rotation of the hooks again. </p>
+
+
+<p> In order to spin to the correct hook, the code records the current position and the target position of the selected hook and calculates the difference in order to determine whether to spin forwards or backwards to get to the hook.  </p>
+
+
+<p> Here is the code for the rotary encoder OLED interface: </p>
+<p> [INSERT] Arduino code </p>
+
+<p> Here is the code incorporating the rotary encoder, the OLED and the stepper motor for positioning of the hooks: </p>
+<p> [INSERT] Arduino code </p>
 
 <h4>Outer Frame</h4>
-<p> acrylic base and 3D printed upper frame</p>
+<p> The outer frame of this box was made by using black acrylic panes for the walls and the top and bottom and a clear acrylic pane for the door. The pieces were designed as finger joint pieces from makercase.com and then laser cut. Two hingges were Small circular pieces were laser cut from the acrylic pane to make the door knob.
+
+The upper frame of this box was 3D printed leaving openings for the OLED screen and wire connections.
+<p> [INSERT] Arduino code </p>
+
+acrylic base and 3D printed upper frame</p>
+
+<p> Electronics </p>
+Here is the circuit.
+Here is the circuit attached at the back of the jewelry organizer after being soldered. For furture iterations, I would envision making a cleaner housing for the electronics that sits to the side of the box and includes a mirror. I would also add LED lights to the box that allows the pieces to be lit and glisten.
+
+
+
+
+
 
 <h4>**Plenty of images**</h4>
 <h4>**Downloaded STL for CAD components**</h4>
