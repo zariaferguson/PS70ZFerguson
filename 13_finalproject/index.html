@@ -5,6 +5,19 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="../style.css" rel="stylesheet">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/google/code-prettify@master/src/prettify.css">
+<script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/src/prettify.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+      document.querySelectorAll('pre code').forEach((el) => {
+        hljs.highlightElement(el);
+      });
+    });
+</script>
+<link rel="stylesheet" href="https://pygments.org/static/css/default.css">
+
 
 <nav class="navbar navbar-expand-sm navbar-dark" style=" color: #EEE7E8;">
   <div style="align-items: center; justify-content: center;" class="container-fluid">
@@ -42,28 +55,32 @@
 <img src="./FINAL.jpg" alt="Picture of final jewelry holder" style="width:300px">
 
 
-<h4>List of Materials and Tools Used: </h4>
-<p> Black acrylic panes </p>
-<p> Clear acrylic panes </p>
-<p> Hinges </p>
-<p> Super Glue </p>
-<p> Tape </p>
+<h4>List of Materials and Tools Used:</h4>
+<ul>
+  <li>Black acrylic panes</li>
+  <li>Clear acrylic panes</li>
+  <li>Hinges</li>
+  <li>Super Glue</li>
+  <li>Tape</li>
+</ul>
 
-<h4>Electronics Used: </h4>
-<p> Pin-Pin Wires </p>
-<p> Pin-Socket Wires </p>
-<p> Rotary Encoder </p>
-<p> OLED Screen </p>
-<p> Stepper Motor </p>
-<p> a4988 Stepper Motor Driver </p>
-<p> Xiao ESP32 Microcontroller </p>
-<p> 12 V Power Supply </p>
+<h4>Electronics Used:</h4>
+<ul>
+  <li>Pin-Pin Wires</li>
+  <li>Pin-Socket Wires</li>
+  <li>Rotary Encoder</li>
+  <li>OLED Screen</li>
+  <li>Stepper Motor</li>
+  <li>A4988 Stepper Motor Driver</li>
+  <li>XIAO ESP32 Microcontroller</li>
+  <li>12V Power Supply</li>
+</ul>
 
 <h4>Fabrication Process</h4>
 <p> The jewlery organizer has three main components: the rotating hooks, the user interface and the outer frame.</p>
 
-<h4>Rotating Hooks: Hardware</h4>
-<p> [INSERT] Picture of all the hook prototypes </p>
+<h4>Rotating Hooks</h4>
+<img src="./hook prototypes.jpg" alt="Picture of final jewelry holder" style="width:300px">
 
 <p> For the design of the hook, I used a similar set up to the hooks in the original jewelery organizer. There was a main body with a hole in the top center for the stepper motor and another hole at the top for a magnet. There is also a small hole at the side to insert a set screw to hold the piece in place when attached to the motor. Each hook has grooves on them to hold the necklace or piece of jewelry. In different iterations of this piece, I used either 4 or 8 hooks. I also played around with detachable arms or having the arms being apart of the main body. In the end, I went with the latter for stability. Here is the final product: </p>
 <p> [INSERT] Picture of all the hook prototypes </p>
